@@ -117,10 +117,12 @@ case class LocalConversion(
         where <- selectPattern.findFirstMatchIn(table) map(_.group(1).trim)
       } {
         val cleanName = name.replaceAll("[\\s-]", "_");
+        // avoid column type 'unknown' for null select in styles osm.xml and osm-de.xml
+        val cleanWhere = where.replaceAll(",NULL as ele,", ",NULL::text as ele,")
         val sql = Seq(
           "DROP TABLE IF EXISTS " + cleanName + ";",
           "DELETE FROM geometry_columns WHERE f_table_name = '" + cleanName + "';",
-          "CREATE TABLE " + cleanName + " AS SELECT " + where + ";",
+          "CREATE TABLE " + cleanName + " AS SELECT " + cleanWhere + ";",
           "ALTER TABLE " + cleanName + " ADD COLUMN id SERIAL PRIMARY KEY;",
           "INSERT INTO geometry_columns VALUES ( '', 'public', '" + cleanName + "', 'way', 2, 900913, 'GEOMETRY');",
           "CREATE INDEX " + cleanName + "_idx ON " + cleanName + " USING GIST(way);"
