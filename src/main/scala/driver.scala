@@ -76,6 +76,7 @@ case class LocalConversion(
       } toMap
 
     val selectPattern = """(?si:\(\s*SELECT\s+(.*)\)\s*AS)""".r
+    val colonPattern = """(?i:(\"(\w+\:)+\w+\")(?=,| from))""".r
 
     val datalayers =
       for {
@@ -118,7 +119,11 @@ case class LocalConversion(
       } {
         val cleanName = name.replaceAll("[\\s-]", "_");
         // avoid column type 'unknown' for null select in styles osm.xml and osm-de.xml
-        val cleanWhere = where.replaceAll(",NULL as ele,", ",NULL::text as ele,")
+        val cleanNullWhere = where.replaceAll(",NULL as ele,", ",NULL::text as ele,")
+        // replace colons in column names of select clause, 
+        // e.g. "addr:housenumber" -> "addr:housenumber" as "addr_housenumber"
+        val cleanWhere = colonPattern.replaceAllIn(
+          cleanNullWhere, m => (m.group(0) + " as " + m.group(0).replaceAll("\\:", "_")))
         val sql = Seq(
           "DROP TABLE IF EXISTS " + cleanName + ";",
           "DELETE FROM geometry_columns WHERE f_table_name = '" + cleanName + "';",

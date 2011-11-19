@@ -25,7 +25,8 @@ package mapnik2 {
         { for {
             name <- (text orElse atts.get("name")).toSeq
             trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "")
-            prop = <ogc:PropertyName>{ trimmed }</ogc:PropertyName>
+            cleaned = trimmed.replaceAll("\\:", "_");
+            prop = <ogc:PropertyName>{ cleaned }</ogc:PropertyName>
           } yield
             { atts.get("text-transform") match {
                 case Some("uppercase") => 
@@ -218,7 +219,8 @@ package mapnik1 {
         { for {
             name <- (text orElse atts.get("name")).toSeq
             trimmed = name.replaceFirst("^\\[", "").replaceFirst("\\]$", "")
-            prop = <ogc:PropertyName>{ trimmed }</ogc:PropertyName>
+            cleaned = trimmed.replaceAll("\\:", "_");
+            prop = <ogc:PropertyName>{ cleaned }</ogc:PropertyName>
           } yield
             { atts.get("text_transform") match {
                 case Some("uppercase") => 
