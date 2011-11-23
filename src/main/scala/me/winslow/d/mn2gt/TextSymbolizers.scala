@@ -46,7 +46,9 @@ package mapnik2 {
             fontset <- atts.get("fontset-name").toSeq
             fontList <- fonts.get(fontset).toSeq
             family <- fontList
-          } yield <CssParameter name="font-family">{ family }</CssParameter>
+            // Java uses different font name for DejaVuSans.ttf as Mapnik
+            familyJava = family.replaceFirst("DejaVu Sans Book", "DejaVu Sans")
+          } yield <CssParameter name="font-family">{ familyJava }</CssParameter>
         }
         { for (size <- atts.get("size").toSeq) yield
             <CssParameter name="font-size">{size}</CssParameter>
@@ -240,7 +242,9 @@ package mapnik1 {
             fontset <- atts.get("fontset_name").toSeq
             fontList <- fonts.get(fontset).toSeq
             family <- fontList
-          } yield <CssParameter name="font-family">{ family }</CssParameter>
+            // Java uses different font name for DejaVuSans.ttf as Mapnik
+            familyJava = family.replaceFirst("DejaVu Sans Book", "DejaVu Sans")
+          } yield <CssParameter name="font-family">{ familyJava }</CssParameter>
         }
         { for (size <- atts.get("size").toSeq) yield
             <CssParameter name="font-size">{size}</CssParameter>
